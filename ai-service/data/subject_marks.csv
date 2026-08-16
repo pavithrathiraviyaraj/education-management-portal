@@ -1,0 +1,13 @@
+student_id,subject_code,subject_name,assignment_score,midterm_score,endterm_score,total_score,grade
+STU1001,CS401,Data Structures,88.0,75.0,80.0,81.0,A
+STU1001,CS402,Database Systems,85.0,82.0,85.0,84.0,A
+STU1001,CS403,Operating Systems,82.0,76.0,80.0,79.0,B
+STU1001,MA401,Discrete Mathematics,85.0,79.0,83.0,82.0,A
+STU1002,IT401,Web Technologies,60.0,50.0,55.0,55.0,C
+STU1002,IT402,Computer Networks,50.0,45.0,48.0,47.0,D
+STU1002,IT403,Software Engineering,55.0,52.0,54.0,53.0,C
+STU1002,MA401,Discrete Mathematics,52.0,42.0,45.0,46.0,D
+STU1005,CS401,Data Structures,45.0,38.0,42.0,41.0,F
+STU1005,CS402,Database Systems,50.0,42.0,46.0,46.0,D
+STU1005,CS403,Operating Systems,40.0,35.0,40.0,38.0,F
+STU1005,MA401,Discrete Mathematics,42.0,40.0,41.0,41.0,F
