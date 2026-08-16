@@ -1,0 +1,41 @@
+services:
+  # 1. Python FastAPI AI Service
+  - type: web
+    name: education-ai-service
+    env: python
+    region: singapore
+    plan: free
+    rootDir: ai-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: PORT
+        value: 10000
+
+  # 2. Node.js Express Backend Service
+  - type: web
+    name: education-backend-service
+    env: node
+    region: singapore
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: AI_SERVICE_URL
+        fromService:
+          type: web
+          name: education-ai-service
+          property: host
+
+  # 3. React Vite Frontend
+  - type: web
+    name: education-frontend-portal
+    env: static
+    region: singapore
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
