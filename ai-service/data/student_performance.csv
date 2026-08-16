@@ -1,0 +1,6 @@
+student_id,name,department,semester,attendance_pct,assignment_avg,midterm_score,endterm_score,previous_gpa
+STU1001,Aarav Sharma,Computer Science,4,88.5,85.0,78.0,82.0,8.4
+STU1002,Priya Patel,Information Technology,4,65.0,55.0,48.0,52.0,6.1
+STU1003,Rahul Verma,Electronics,4,92.0,91.0,89.0,94.0,9.2
+STU1004,Ananya Roy,Mechanical Engineering,4,72.0,62.0,58.0,60.0,6.8
+STU1005,Vikram Singh,Computer Science,4,58.0,45.0,40.0,44.0,5.4

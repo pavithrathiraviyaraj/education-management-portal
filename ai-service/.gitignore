@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv/
+venv/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+.idea/
+.vscode/
+models/*.pkl
+models/*.joblib
+!models/.gitkeep
