@@ -252,8 +252,22 @@ app.post("/api/auth/login",async(req,res)=>{
 });
 
 mongoose.connect(process.env.MONGODB_URI)
-    .then(()=>{
+    .then(async ()=>{
         console.log("MongoDB Connected Successfully");
+        try {
+            const existingAdmin = await Admin.findOne({ email: "admin@edu.portal" });
+            if (!existingAdmin) {
+                const hashedPassword = await bcrypt.hash("admin123", 10);
+                await Admin.create({
+                    name: "Portal Admin",
+                    email: "admin@edu.portal",
+                    password: hashedPassword
+                });
+                console.log("✅ Seeded default admin account: admin@edu.portal / admin123");
+            }
+        } catch (seedErr) {
+            console.log("Admin seed notice:", seedErr.message);
+        }
     })
     .catch((err)=>{
         console.log("MongoDB Connection Error:",err.message);
