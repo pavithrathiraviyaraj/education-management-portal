@@ -82,6 +82,75 @@ app.delete("/api/students/:id",authMiddleware,async(req,res)=>{
     }
 });
 
+// ==========================================
+// AI SERVICE INTEGRATION ENDPOINTS
+// ==========================================
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8000";
+const axios = require("axios");
+
+// 1. Get AI Analytics (Performance, At-Risk Status, Weak Subjects, Recommendations)
+app.get("/api/students/:id/ai-analysis", authMiddleware, async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        const aiPayload = {
+            student_id: student._id.toString(),
+            name: student.name,
+            department: student.course || "General",
+            semester: 1,
+            attendance_pct: student.attendance_pct || 80.0,
+            assignment_avg: student.assignment_avg || 75.0,
+            midterm_score: student.midterm_score || 70.0,
+            endterm_score: student.endterm_score || 72.0,
+            previous_gpa: student.previous_gpa || 7.5,
+            subject_marks: student.subject_marks || []
+        };
+
+        const aiResponse = await axios.post(`${AI_SERVICE_URL}/api/v1/predict`, aiPayload);
+        res.json({
+            student,
+            ai_analytics: aiResponse.data
+        });
+    } catch (error) {
+        console.error("AI Service Integration Error:", error.message);
+        res.status(500).json({ message: "Failed to communicate with AI Service", error: error.message });
+    }
+});
+
+// 2. AI Chatbot Proxy Endpoint
+app.post("/api/ai/chat", authMiddleware, async (req, res) => {
+    try {
+        const { student_id, message } = req.body;
+        let studentContext = {};
+
+        if (student_id) {
+            const student = await Student.findById(student_id);
+            if (student) {
+                studentContext = {
+                    student_id: student._id.toString(),
+                    name: student.name,
+                    attendance_pct: student.attendance_pct || 80.0,
+                    gpa_estimate: student.previous_gpa || 7.5
+                };
+            }
+        }
+
+        const aiResponse = await axios.post(`${AI_SERVICE_URL}/api/v1/chat`, {
+            student_id: student_id || "ANONYMOUS",
+            message: message,
+            student_context: studentContext
+        });
+
+        res.json(aiResponse.data);
+    } catch (error) {
+        console.error("AI Chatbot Proxy Error:", error.message);
+        res.status(500).json({ message: "Failed to process AI chat query", error: error.message });
+    }
+});
+
 app.post("/api/auth/register",async(req,res)=>{
     try{
         const {name,email,password}=req.body;
@@ -183,8 +252,22 @@ app.post("/api/auth/login",async(req,res)=>{
 });
 
 mongoose.connect(process.env.MONGODB_URI)
-    .then(()=>{
+    .then(async ()=>{
         console.log("MongoDB Connected Successfully");
+        try {
+            const existingAdmin = await Admin.findOne({ email: "admin@edu.portal" });
+            if (!existingAdmin) {
+                const hashedPassword = await bcrypt.hash("admin123", 10);
+                await Admin.create({
+                    name: "Portal Admin",
+                    email: "admin@edu.portal",
+                    password: hashedPassword
+                });
+                console.log("✅ Seeded default admin account: admin@edu.portal / admin123");
+            }
+        } catch (seedErr) {
+            console.log("Admin seed notice:", seedErr.message);
+        }
     })
     .catch((err)=>{
         console.log("MongoDB Connection Error:",err.message);
