@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bot, Send, X, Sparkles, User, RefreshCw } from 'lucide-react';
+import { Bot, Send, X, Sparkles, User, RefreshCw, MessageSquare } from 'lucide-react';
 import { sendAIChatQuery } from '../services/aiEngineService';
 
 export const AIChatbotWidget = ({ studentId, studentData }) => {
@@ -7,7 +7,7 @@ export const AIChatbotWidget = ({ studentId, studentData }) => {
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
-      text: `Hello ${studentData?.name || 'Student'}! 👋 I am your AI Academic Advisor. How can I help you improve your grades or study strategy today?`
+      text: `Hello ${studentData?.name || 'Student'}! 👋 I am your AI Academic Advisor. Ask me anything about your grades, study schedule, or weak subjects.`
     }
   ]);
   const [input, setInput] = useState('');
@@ -33,7 +33,7 @@ export const AIChatbotWidget = ({ studentId, studentData }) => {
       const res = await sendAIChatQuery(studentId, userText, context);
       setMessages((prev) => [...prev, { sender: 'bot', text: res.reply || res.message || "Here is my advice." }]);
     } catch (err) {
-      setMessages((prev) => [...prev, { sender: 'bot', text: "Sorry, I had trouble generating a response. Please try again!" }]);
+      setMessages((prev) => [...prev, { sender: 'bot', text: "Sorry, I had trouble connecting. Please try again." }]);
     } finally {
       setLoading(false);
     }
@@ -45,78 +45,98 @@ export const AIChatbotWidget = ({ studentId, studentData }) => {
 
   return (
     <>
-      {/* Floating Toggle FAB Button */}
-      <button className="chat-widget-fab" onClick={() => setIsOpen(!isOpen)} title="AI Academic Advisor">
-        {isOpen ? <X size={28} /> : <Bot size={30} />}
+      {/* Handcrafted Floating Pill Launcher */}
+      <button className="chat-launcher-btn" onClick={() => setIsOpen(!isOpen)}>
+        {isOpen ? <X size={20} /> : <Sparkles size={20} />}
+        <span>{isOpen ? 'Close AI Chat' : 'AI Academic Advisor'}</span>
       </button>
 
-      {/* Slide-out Chat Window Drawer */}
+      {/* Slide-Up Handcrafted Drawer */}
       {isOpen && (
-        <div className="chat-window">
+        <div style={{
+          position: 'fixed',
+          bottom: '95px',
+          right: '28px',
+          width: '390px',
+          height: '540px',
+          background: 'rgba(17, 24, 39, 0.95)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(99, 102, 241, 0.3)',
+          borderRadius: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(79, 70, 229, 0.2)',
+          zIndex: 1000,
+          overflow: 'hidden',
+          animation: 'fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}>
           {/* Header */}
-          <div style={{ background: 'linear-gradient(135deg, #4f46e5, #0284c7)', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#fff' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Sparkles size={22} />
+          <div style={{ background: 'linear-gradient(135deg, #4f46e5, #0284c7)', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#ffffff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '12px' }}>
+                <Bot size={22} color="#ffffff" />
+              </div>
               <div>
-                <h4 style={{ fontSize: '1rem', fontWeight: 700, margin: 0 }}>AI Academic Advisor</h4>
-                <span style={{ fontSize: '0.75rem', opacity: 0.9 }}>Powered by FastAPI & LLM</span>
+                <h4 style={{ fontSize: '1rem', fontWeight: 800, margin: 0, letterSpacing: '-0.01em' }}>AI Academic Advisor</h4>
+                <span style={{ fontSize: '0.74rem', opacity: 0.9 }}>Live FastAPI LLM Integration</span>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}>
-              <X size={20} />
+            <button onClick={() => setIsOpen(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <X size={18} />
             </button>
           </div>
 
-          {/* Messages Body */}
-          <div style={{ flex: 1, padding: '1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {/* Chat Messages */}
+          <div style={{ flex: 1, padding: '1.2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {messages.map((msg, idx) => (
-              <div key={idx} style={{ display: 'flex', gap: '8px', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
+              <div key={idx} style={{ display: 'flex', gap: '10px', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
                 {msg.sender === 'bot' && (
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Bot size={16} color="#fff" />
                   </div>
                 )}
                 <div style={{
-                  maxWidth: '80%',
-                  padding: '0.75rem 1rem',
-                  borderRadius: msg.sender === 'user' ? '16px 16px 2px 16px' : '16px 16px 16px 2px',
-                  background: msg.sender === 'user' ? '#6366f1' : 'rgba(255,255,255,0.08)',
-                  color: '#fff',
+                  maxWidth: '82%',
+                  padding: '0.85rem 1.1rem',
+                  borderRadius: msg.sender === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                  background: msg.sender === 'user' ? 'linear-gradient(135deg, #4f46e5, #7c3aed)' : 'rgba(255,255,255,0.06)',
+                  color: '#ffffff',
                   fontSize: '0.9rem',
-                  lineHeight: '1.4',
-                  border: msg.sender === 'bot' ? '1px solid rgba(255,255,255,0.1)' : 'none'
+                  lineHeight: '1.45',
+                  border: msg.sender === 'bot' ? '1px solid rgba(255,255,255,0.08)' : 'none'
                 }}>
                   {msg.text}
                 </div>
               </div>
             ))}
             {loading && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '0.85rem' }}>
-                <RefreshCw size={16} className="animate-spin" /> Thinking & analyzing student context...
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '0.85rem', padding: '6px' }}>
+                <RefreshCw size={16} className="animate-spin" color="#818cf8" /> Analyzing context & generating advice...
               </div>
             )}
           </div>
 
           {/* Quick Prompts */}
-          <div style={{ padding: '0.5rem 1rem', display: 'flex', gap: '6px', overflowX: 'auto', background: 'rgba(0,0,0,0.2)' }}>
-            <button onClick={() => handleQuickPrompt("How can I improve my weak subjects?")} style={{ fontSize: '0.75rem', padding: '4px 8px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', color: '#38bdf8', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-              💡 Weak Subjects Help
+          <div style={{ padding: '0.6rem 1rem', display: 'flex', gap: '8px', overflowX: 'auto', background: 'rgba(0,0,0,0.3)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+            <button onClick={() => handleQuickPrompt("How to improve my weak subjects?")} style={{ fontSize: '0.76rem', padding: '6px 12px', borderRadius: '99px', background: 'rgba(255,255,255,0.08)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.2)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              💡 Improve Weak Subjects
             </button>
-            <button onClick={() => handleQuickPrompt("Am I at academic risk?")} style={{ fontSize: '0.75rem', padding: '4px 8px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', color: '#38bdf8', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-              ⚠️ Risk Analysis
+            <button onClick={() => handleQuickPrompt("Explain my risk factors")} style={{ fontSize: '0.76rem', padding: '6px 12px', borderRadius: '99px', background: 'rgba(255,255,255,0.08)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.2)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              ⚠️ My Risk Analysis
             </button>
           </div>
 
-          {/* Input Footer */}
-          <form onSubmit={handleSend} style={{ padding: '0.8rem', display: 'flex', gap: '8px', borderTop: '1px solid rgba(255,255,255,0.1)', background: 'rgba(15,23,42,0.8)' }}>
+          {/* Form */}
+          <form onSubmit={handleSend} style={{ padding: '0.9rem 1.2rem', display: 'flex', gap: '10px', background: 'rgba(9, 13, 22, 0.95)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
             <input
               type="text"
-              placeholder="Ask your AI advisor..."
+              placeholder="Ask a question..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '10px', padding: '0.6rem 0.9rem', color: '#fff', outline: 'none', fontSize: '0.9rem' }}
+              style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '0.75rem 1rem', color: '#fff', outline: 'none', fontSize: '0.9rem' }}
             />
-            <button type="submit" className="btn btn-primary" style={{ padding: '0.6rem 1rem', borderRadius: '10px' }}>
+            <button type="submit" className="btn-handcrafted btn-primary-glow" style={{ padding: '0.75rem 1.1rem', borderRadius: '12px' }}>
               <Send size={18} />
             </button>
           </form>

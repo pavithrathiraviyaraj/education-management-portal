@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../../context/UserContext';
 import { getStudentAIAnalysis } from '../../services/aiEngineService';
-import { ShieldAlert, Award, TrendingUp, AlertTriangle, CheckCircle, Lightbulb, BookOpen, UserCheck, RefreshCw } from 'lucide-react';
+import { ShieldAlert, Award, TrendingUp, AlertCircle, CheckCircle2, Lightbulb, BookOpen, UserCheck, RefreshCw, Zap, Target } from 'lucide-react';
 import { AIChatbotWidget } from '../../components/AIChatbotWidget';
 
 export const StudentDashboard = () => {
@@ -9,7 +9,6 @@ export const StudentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
 
-  // Sample data fallback for quick switching demo
   const sampleStudents = {
     'STU1001': {
       student_id: 'STU1001',
@@ -22,8 +21,8 @@ export const StudentDashboard = () => {
       endterm_score: 89.0,
       previous_gpa: 8.8,
       subject_marks: [
-        { subject_code: 'CS101', subject_name: 'Data Structures', assignment_score: 90, midterm_score: 88, endterm_score: 92, total_score: 90, grade: 'A+' },
-        { subject_code: 'CS102', subject_name: 'Database Management', assignment_score: 85, midterm_score: 82, endterm_score: 86, total_score: 84.3, grade: 'A' },
+        { subject_code: 'CS101', subject_name: 'Data Structures & Algo', assignment_score: 90, midterm_score: 88, endterm_score: 92, total_score: 90, grade: 'A+' },
+        { subject_code: 'CS102', subject_name: 'Database Systems', assignment_score: 85, midterm_score: 82, endterm_score: 86, total_score: 84.3, grade: 'A' },
         { subject_code: 'MA101', subject_name: 'Discrete Mathematics', assignment_score: 82, midterm_score: 80, endterm_score: 84, total_score: 82, grade: 'A' }
       ]
     },
@@ -77,61 +76,99 @@ export const StudentDashboard = () => {
     return () => { isMounted = false; };
   }, [activeStudentId]);
 
+  // Risk Pill Color Utility
+  const getRiskClass = (level) => {
+    if (level === 'HIGH') return 'risk-pill-high';
+    if (level === 'MEDIUM') return 'risk-pill-medium';
+    return 'risk-pill-low';
+  };
+
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '4rem' }}>
-      {/* Top Profile Header */}
-      <div className="glass-card" style={{ padding: '1.5rem 2rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem 5rem' }} className="animate-fade-in">
+      
+      {/* Handcrafted Profile & Demo Student Switcher Header */}
+      <div className="handcrafted-card" style={{ padding: '1.8rem 2.2rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
         <div>
-          <span style={{ fontSize: '0.85rem', color: '#38bdf8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>
-            Academic Profile Overview
-          </span>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800, marginTop: '4px' }}>{currentStudent.name}</h1>
-          <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>
-            ID: {currentStudent.student_id} • {currentStudent.department} • Semester {currentStudent.semester}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+            <span style={{ fontSize: '0.78rem', color: '#06b6d4', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Student Academic Analytics Hub
+            </span>
+            <span style={{ background: 'rgba(255,255,255,0.08)', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', color: '#9ca3af' }}>
+              Sem {currentStudent.semester}
+            </span>
+          </div>
+          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#f9fafb', margin: 0, letterSpacing: '-0.02em' }}>
+            {currentStudent.name}
+          </h1>
+          <p style={{ color: '#9ca3af', fontSize: '0.92rem', marginTop: '4px' }}>
+            ID: <strong style={{ color: '#e5e7eb' }}>{currentStudent.student_id}</strong> • Department of {currentStudent.department}
           </p>
         </div>
 
-        {/* Student Switcher Dropdown */}
-        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.8rem 1.2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '4px', fontWeight: 600 }}>Switch Demo Student:</label>
-          <select 
-            value={activeStudentId} 
-            onChange={(e) => setActiveStudentId(e.target.value)}
-            style={{ background: '#0f172a', color: '#fff', border: '1px solid #6366f1', padding: '6px 12px', borderRadius: '8px', fontWeight: 600, outline: 'none', cursor: 'pointer' }}
-          >
-            <option value="STU1001">STU1001 - Aarav (Low Risk / High Score)</option>
-            <option value="STU1002">STU1002 - Priya (Medium Risk / Caution)</option>
-            <option value="STU1005">STU1005 - Vikram (High Risk / Critical)</option>
-          </select>
+        {/* Handcrafted Segmented Demo Student Chips */}
+        <div style={{ background: 'rgba(0,0,0,0.3)', padding: '6px', borderRadius: '14px', border: '1px solid var(--border-subtle)' }}>
+          <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 700, paddingLeft: '8px', marginBottom: '6px', textTransform: 'uppercase' }}>
+            Switch Demo Persona:
+          </div>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button 
+              className={`segmented-btn ${activeStudentId === 'STU1001' ? 'active' : ''}`}
+              onClick={() => setActiveStudentId('STU1001')}
+            >
+              🟢 Aarav (Low Risk)
+            </button>
+            <button 
+              className={`segmented-btn ${activeStudentId === 'STU1002' ? 'active' : ''}`}
+              onClick={() => setActiveStudentId('STU1002')}
+            >
+              🟡 Priya (Medium Risk)
+            </button>
+            <button 
+              className={`segmented-btn ${activeStudentId === 'STU1005' ? 'active' : ''}`}
+              onClick={() => setActiveStudentId('STU1005')}
+            >
+              🔴 Vikram (High Risk)
+            </button>
+          </div>
         </div>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: '#94a3b8' }}>
-          <RefreshCw size={36} className="animate-spin" style={{ margin: '0 auto 1rem' }} />
-          <h3>Executing Python AI Analytics Pipeline...</h3>
+        <div style={{ textAlign: 'center', padding: '5rem 2rem', color: '#9ca3af' }}>
+          <RefreshCw size={40} className="animate-spin" style={{ margin: '0 auto 1.2rem', color: '#6366f1' }} />
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f3f4f6' }}>Processing Python AI Microservice Analytics...</h3>
+          <p style={{ fontSize: '0.9rem', color: '#6b7280', marginTop: '4px' }}>Evaluating attendance metrics, grade trends & risk factors</p>
         </div>
       ) : (
         <>
-          {/* Risk Level Banner */}
+          {/* Handcrafted At-Risk Alert Banner */}
           {data?.risk_prediction && (
-            <div className="glass-card" style={{ 
-              padding: '1.5rem 2rem', 
+            <div className="handcrafted-card" style={{ 
+              padding: '1.6rem 2rem', 
               marginBottom: '2rem', 
-              borderLeft: `6px solid ${data.risk_prediction.risk_level === 'HIGH' ? '#ef4444' : data.risk_prediction.risk_level === 'MEDIUM' ? '#f59e0b' : '#10b981'}` 
+              background: data.risk_prediction.risk_level === 'HIGH' ? 'rgba(244,63,94,0.08)' : data.risk_prediction.risk_level === 'MEDIUM' ? 'rgba(245,158,11,0.08)' : 'rgba(16,185,129,0.08)',
+              borderColor: data.risk_prediction.risk_level === 'HIGH' ? 'rgba(244,63,94,0.3)' : data.risk_prediction.risk_level === 'MEDIUM' ? 'rgba(245,158,11,0.3)' : 'rgba(16,185,129,0.3)'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <ShieldAlert size={36} color={data.risk_prediction.risk_level === 'HIGH' ? '#ef4444' : data.risk_prediction.risk_level === 'MEDIUM' ? '#f59e0b' : '#10b981'} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+                  <div style={{ 
+                    padding: '12px', 
+                    borderRadius: '14px', 
+                    background: data.risk_prediction.risk_level === 'HIGH' ? 'rgba(244,63,94,0.2)' : data.risk_prediction.risk_level === 'MEDIUM' ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)' 
+                  }}>
+                    <ShieldAlert size={32} color={data.risk_prediction.risk_level === 'HIGH' ? '#fb7185' : data.risk_prediction.risk_level === 'MEDIUM' ? '#fbbf24' : '#34d399'} />
+                  </div>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <h3 style={{ fontSize: '1.3rem', fontWeight: 700 }}>Academic Risk Prediction</h3>
-                      <span className={`badge-risk ${data.risk_prediction.risk_level}`}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f9fafb', margin: 0 }}>
+                        AI Academic Risk Prediction
+                      </h3>
+                      <span className={`risk-pill ${getRiskClass(data.risk_prediction.risk_level)}`}>
                         {data.risk_prediction.risk_level} RISK (Score: {data.risk_prediction.risk_score})
                       </span>
                     </div>
-                    <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginTop: '4px' }}>
-                      Primary Factors: {data.risk_prediction.primary_risk_factors.join(' • ')}
+                    <p style={{ color: '#9ca3af', fontSize: '0.9rem', marginTop: '6px' }}>
+                      Identified Risk Drivers: <span style={{ color: '#e5e7eb', fontWeight: 600 }}>{data.risk_prediction.primary_risk_factors.join(' • ')}</span>
                     </p>
                   </div>
                 </div>
@@ -139,130 +176,153 @@ export const StudentDashboard = () => {
             </div>
           )}
 
-          {/* Core Metrics Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+          {/* Key Metric Tiles Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+            
             {/* Overall Score */}
-            <div className="glass-card" style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.9rem', fontWeight: 600 }}>
+            <div className="handcrafted-card" style={{ padding: '1.8rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#9ca3af', fontSize: '0.88rem', fontWeight: 600 }}>
                 <span>Overall Performance Score</span>
-                <Award size={20} color="#6366f1" />
+                <Award size={22} color="#6366f1" />
               </div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0.5rem 0', color: '#f8fafc' }}>
-                {data?.performance_analysis?.overall_score || 82.5}%
-              </h2>
-              <div className="progress-bar-bg">
-                <div className="progress-bar-fill" style={{ width: `${data?.performance_analysis?.overall_score || 82.5}%`, background: 'linear-gradient(90deg, #6366f1, #38bdf8)' }} />
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', margin: '0.8rem 0' }}>
+                <h2 style={{ fontSize: '2.8rem', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.03em' }}>
+                  {data?.performance_analysis?.overall_score || 82.5}%
+                </h2>
+                <span style={{ fontSize: '0.85rem', color: '#34d399', fontWeight: 700 }}>
+                  {data?.performance_analysis?.academic_status || 'Good Standing'}
+                </span>
               </div>
-              <span style={{ fontSize: '0.8rem', color: '#34d399', fontWeight: 600, display: 'inline-block', marginTop: '8px' }}>
-                Status: {data?.performance_analysis?.academic_status || 'Good Standing'}
-              </span>
+              <div className="track-bg">
+                <div className="track-fill" style={{ width: `${data?.performance_analysis?.overall_score || 82.5}%`, background: 'linear-gradient(90deg, #6366f1, #06b6d4)' }} />
+              </div>
             </div>
 
-            {/* GPA Estimate */}
-            <div className="glass-card" style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.9rem', fontWeight: 600 }}>
-                <span>Estimated GPA</span>
-                <TrendingUp size={20} color="#38bdf8" />
+            {/* GPA Gauge Estimate */}
+            <div className="handcrafted-card" style={{ padding: '1.8rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#9ca3af', fontSize: '0.88rem', fontWeight: 600 }}>
+                <span>Estimated Cumulative GPA</span>
+                <TrendingUp size={22} color="#06b6d4" />
               </div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0.5rem 0', color: '#f8fafc' }}>
-                {data?.performance_analysis?.gpa_estimate || 8.5} / 10
-              </h2>
-              <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Based on assignment & exam mark weights</p>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', margin: '0.8rem 0' }}>
+                <h2 style={{ fontSize: '2.8rem', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.03em' }}>
+                  {data?.performance_analysis?.gpa_estimate || 8.5}
+                </h2>
+                <span style={{ fontSize: '1.1rem', color: '#6b7280', fontWeight: 700 }}>/ 10.0</span>
+              </div>
+              <p style={{ color: '#6b7280', fontSize: '0.82rem' }}>Calculated using weighted internal exam algorithms</p>
             </div>
 
-            {/* Attendance */}
-            <div className="glass-card" style={{ padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '0.9rem', fontWeight: 600 }}>
-                <span>Attendance Rate</span>
-                <UserCheck size={20} color="#10b981" />
+            {/* Attendance Track */}
+            <div className="handcrafted-card" style={{ padding: '1.8rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#9ca3af', fontSize: '0.88rem', fontWeight: 600 }}>
+                <span>Attendance Standing</span>
+                <UserCheck size={22} color={currentStudent.attendance_pct < 75 ? '#fb7185' : '#34d399'} />
               </div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0.5rem 0', color: currentStudent.attendance_pct < 75 ? '#f87171' : '#34d399' }}>
-                {currentStudent.attendance_pct}%
-              </h2>
-              <div className="progress-bar-bg">
-                <div className="progress-bar-fill" style={{ width: `${currentStudent.attendance_pct}%`, background: currentStudent.attendance_pct < 75 ? '#ef4444' : '#10b981' }} />
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', margin: '0.8rem 0' }}>
+                <h2 style={{ fontSize: '2.8rem', fontWeight: 900, color: currentStudent.attendance_pct < 75 ? '#fb7185' : '#ffffff', letterSpacing: '-0.03em' }}>
+                  {currentStudent.attendance_pct}%
+                </h2>
+                {currentStudent.attendance_pct < 75 && (
+                  <span style={{ fontSize: '0.78rem', color: '#fb7185', fontWeight: 700, background: 'rgba(244,63,94,0.15)', padding: '2px 8px', borderRadius: '10px' }}>
+                    Critical Warning
+                  </span>
+                )}
               </div>
-              <span style={{ fontSize: '0.8rem', color: currentStudent.attendance_pct < 75 ? '#f87171' : '#94a3b8', marginTop: '8px', display: 'block' }}>
-                {currentStudent.attendance_pct < 75 ? '⚠️ Below mandatory 75% threshold' : 'Optimal attendance record'}
-              </span>
+              <div className="track-bg">
+                <div className="track-fill" style={{ width: `${currentStudent.attendance_pct}%`, background: currentStudent.attendance_pct < 75 ? '#f43f5e' : '#10b981' }} />
+              </div>
             </div>
+
           </div>
 
-          {/* Weak Subjects & Recommendations Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
-            {/* Weak Subjects */}
-            <div className="glass-card" style={{ padding: '1.8rem' }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <AlertTriangle size={20} color="#f59e0b" /> Weak Subjects Detected ({data?.weak_subject_detection?.weak_subjects_count || 0})
-              </h3>
+          {/* Weak Subjects & Study Recommendations Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '2rem', marginBottom: '2.5rem' }}>
+            
+            {/* Weak Subjects Card */}
+            <div className="handcrafted-card" style={{ padding: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f9fafb', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <AlertCircle size={22} color="#f59e0b" /> Weak Subjects ({data?.weak_subject_detection?.weak_subjects_count || 0})
+                </h3>
+              </div>
+              
               {data?.weak_subject_detection?.weak_subjects?.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   {data.weak_subject_detection.weak_subjects.map((sub, idx) => (
-                    <div key={idx} style={{ background: 'rgba(255,255,255,0.04)', padding: '1rem', borderRadius: '12px', borderLeft: '4px solid #ef4444' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
-                        <span>{sub.subject_name}</span>
-                        <span style={{ color: '#f87171' }}>Score: {sub.total_score}%</span>
+                    <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', padding: '1.2rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)', borderLeft: '4px solid #f43f5e' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <span style={{ fontWeight: 800, fontSize: '1rem', color: '#ffffff' }}>{sub.subject_name}</span>
+                        <span style={{ color: '#fb7185', fontWeight: 800, fontSize: '0.95rem' }}>Score: {sub.total_score}%</span>
                       </div>
-                      <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '4px' }}>
-                        Severity: <strong style={{ color: '#fbbf24' }}>{sub.severity}</strong> — {sub.reason}
+                      <p style={{ color: '#9ca3af', fontSize: '0.86rem', lineHeight: '1.4' }}>
+                        Deficit Level: <strong style={{ color: '#fbbf24' }}>{sub.severity}</strong> — {sub.reason}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div style={{ padding: '2rem', textAlign: 'center', color: '#34d399', background: 'rgba(16,185,129,0.05)', borderRadius: '12px' }}>
-                  <CheckCircle size={32} style={{ margin: '0 auto 0.5rem' }} />
-                  <p style={{ fontWeight: 600 }}>No weak subjects detected! All subject scores are above 60%.</p>
+                <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center', color: '#34d399', background: 'rgba(16,185,129,0.04)', borderRadius: '14px', border: '1px solid rgba(16,185,129,0.15)' }}>
+                  <CheckCircle2 size={36} style={{ margin: '0 auto 0.8rem' }} />
+                  <h4 style={{ fontWeight: 800, fontSize: '1.05rem', color: '#34d399' }}>All Subjects in Good Standing</h4>
+                  <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginTop: '4px' }}>Every enrolled subject score exceeds the 60% baseline benchmark.</p>
                 </div>
               )}
             </div>
 
-            {/* AI Action Recommendations */}
-            <div className="glass-card" style={{ padding: '1.8rem' }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Lightbulb size={20} color="#38bdf8" /> AI Study Recommendations
-              </h3>
-              <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '1rem' }}>{data?.recommendations?.summary}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {/* AI Targeted Recommendations Card */}
+            <div className="handcrafted-card" style={{ padding: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f9fafb', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Lightbulb size={22} color="#06b6d4" /> AI Study Action Plan
+                </h3>
+              </div>
+              <p style={{ color: '#9ca3af', fontSize: '0.88rem', marginBottom: '1.2rem', lineHeight: '1.5' }}>
+                {data?.recommendations?.summary}
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {data?.recommendations?.action_items?.map((item, idx) => (
-                  <div key={idx} style={{ background: 'rgba(255,255,255,0.04)', padding: '0.8rem 1rem', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ 
-                      fontSize: '0.75rem', 
-                      padding: '2px 8px', 
-                      borderRadius: '10px', 
-                      fontWeight: 700, 
-                      background: item.priority === 'High' ? 'rgba(239,68,68,0.2)' : 'rgba(99,102,241,0.2)', 
-                      color: item.priority === 'High' ? '#f87171' : '#818cf8' 
+                  <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem 1.2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+                    <div style={{ 
+                      padding: '4px 10px', 
+                      borderRadius: '8px', 
+                      fontSize: '0.72rem', 
+                      fontWeight: 800, 
+                      background: item.priority === 'High' ? 'rgba(244,63,94,0.15)' : 'rgba(99,102,241,0.15)', 
+                      color: item.priority === 'High' ? '#fb7185' : '#818cf8',
+                      textTransform: 'uppercase'
                     }}>
                       {item.priority}
-                    </span>
+                    </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{item.action}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Target Goal: {item.target}</div>
+                      <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#ffffff' }}>{item.action}</div>
+                      <div style={{ fontSize: '0.82rem', color: '#9ca3af', marginTop: '2px' }}>Target Benchmark: <strong style={{ color: '#06b6d4' }}>{item.target}</strong></div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
+
           </div>
 
-          {/* AI Key Insights Summary */}
-          <div className="glass-card" style={{ padding: '1.8rem', marginBottom: '2rem' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <BookOpen size={20} color="#6366f1" /> Executive Dashboard Insights
+          {/* AI Executive Dashboard Takeaways */}
+          <div className="handcrafted-card" style={{ padding: '2rem' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f9fafb', marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <BookOpen size={22} color="#6366f1" /> Executive AI Analytics Summary
             </h3>
-            <ul style={{ listStyleType: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
               {data?.insights?.key_takeaways?.map((takeaway, idx) => (
-                <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', color: '#e2e8f0', fontSize: '0.95rem' }}>
-                  <span style={{ color: '#38bdf8', fontWeight: 700 }}>•</span> {takeaway}
-                </li>
+                <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem 1.2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                  <Zap size={18} color="#06b6d4" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <p style={{ color: '#e5e7eb', fontSize: '0.9rem', lineHeight: '1.5' }}>{takeaway}</p>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         </>
       )}
 
-      {/* Floating Chatbot Widget */}
+      {/* Floating Bespoke Chatbot Widget */}
       <AIChatbotWidget studentId={activeStudentId} studentData={currentStudent} />
     </div>
   );
