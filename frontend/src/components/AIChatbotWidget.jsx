@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bot, Send, X, Sparkles, User, RefreshCw, MessageSquare } from 'lucide-react';
+import { Bot, Send, X, Sparkles, RefreshCw } from 'lucide-react';
 import { sendAIChatQuery } from '../services/aiEngineService';
 
 export const AIChatbotWidget = ({ studentId, studentData }) => {
@@ -45,13 +45,13 @@ export const AIChatbotWidget = ({ studentId, studentData }) => {
 
   return (
     <>
-      {/* Handcrafted Floating Pill Launcher */}
+      {/* Handcrafted Floating Pill Launcher - Red Theme */}
       <button className="chat-launcher-btn" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? <X size={20} /> : <Sparkles size={20} />}
         <span>{isOpen ? 'Close AI Chat' : 'AI Academic Advisor'}</span>
       </button>
 
-      {/* Slide-Up Handcrafted Drawer */}
+      {/* Slide-Up Handcrafted Drawer - Light Theme */}
       {isOpen && (
         <div style={{
           position: 'fixed',
@@ -59,20 +59,18 @@ export const AIChatbotWidget = ({ studentId, studentData }) => {
           right: '28px',
           width: '390px',
           height: '540px',
-          background: 'rgba(17, 24, 39, 0.95)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          border: '1px solid rgba(99, 102, 241, 0.3)',
+          background: '#ffffff', /* Clean white background */
+          border: '1px solid #e2e8f0',
           borderRadius: '24px',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(79, 70, 229, 0.2)',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.15), 0 0 30px rgba(220, 38, 38, 0.15)',
           zIndex: 1000,
           overflow: 'hidden',
           animation: 'fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
         }}>
-          {/* Header */}
-          <div style={{ background: 'linear-gradient(135deg, #4f46e5, #0284c7)', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#ffffff' }}>
+          {/* Header - Crimson Red */}
+          <div style={{ background: 'var(--brand-red)', padding: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#ffffff' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '12px' }}>
                 <Bot size={22} color="#ffffff" />
@@ -88,11 +86,11 @@ export const AIChatbotWidget = ({ studentId, studentData }) => {
           </div>
 
           {/* Chat Messages */}
-          <div style={{ flex: 1, padding: '1.2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ flex: 1, padding: '1.2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px', background: '#f8fafc' }}>
             {messages.map((msg, idx) => (
               <div key={idx} style={{ display: 'flex', gap: '10px', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
                 {msg.sender === 'bot' && (
-                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--brand-red)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Bot size={16} color="#fff" />
                   </div>
                 )}
@@ -100,41 +98,42 @@ export const AIChatbotWidget = ({ studentId, studentData }) => {
                   maxWidth: '82%',
                   padding: '0.85rem 1.1rem',
                   borderRadius: msg.sender === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                  background: msg.sender === 'user' ? 'linear-gradient(135deg, #4f46e5, #7c3aed)' : 'rgba(255,255,255,0.06)',
-                  color: '#ffffff',
+                  background: msg.sender === 'user' ? 'var(--brand-red)' : '#ffffff',
+                  color: msg.sender === 'user' ? '#ffffff' : '#0f172a',
                   fontSize: '0.9rem',
                   lineHeight: '1.45',
-                  border: msg.sender === 'bot' ? '1px solid rgba(255,255,255,0.08)' : 'none'
+                  border: msg.sender === 'bot' ? '1px solid #e2e8f0' : 'none',
+                  boxShadow: msg.sender === 'bot' ? '0 2px 4px rgba(0,0,0,0.02)' : 'none'
                 }}>
                   {msg.text}
                 </div>
               </div>
             ))}
             {loading && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '0.85rem', padding: '6px' }}>
-                <RefreshCw size={16} className="animate-spin" color="#818cf8" /> Analyzing context & generating advice...
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '0.85rem', padding: '6px' }}>
+                <RefreshCw size={16} className="animate-spin" color="var(--brand-red)" /> Analyzing context & generating advice...
               </div>
             )}
           </div>
 
           {/* Quick Prompts */}
-          <div style={{ padding: '0.6rem 1rem', display: 'flex', gap: '8px', overflowX: 'auto', background: 'rgba(0,0,0,0.3)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            <button onClick={() => handleQuickPrompt("How to improve my weak subjects?")} style={{ fontSize: '0.76rem', padding: '6px 12px', borderRadius: '99px', background: 'rgba(255,255,255,0.08)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.2)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+          <div style={{ padding: '0.6rem 1rem', display: 'flex', gap: '8px', overflowX: 'auto', background: '#ffffff', borderTop: '1px solid #e2e8f0' }}>
+            <button onClick={() => handleQuickPrompt("How to improve my weak subjects?")} style={{ fontSize: '0.76rem', padding: '6px 12px', borderRadius: '99px', background: 'var(--brand-red-light)', color: 'var(--brand-red)', border: '1px solid var(--brand-red-border)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
               💡 Improve Weak Subjects
             </button>
-            <button onClick={() => handleQuickPrompt("Explain my risk factors")} style={{ fontSize: '0.76rem', padding: '6px 12px', borderRadius: '99px', background: 'rgba(255,255,255,0.08)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.2)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            <button onClick={() => handleQuickPrompt("Explain my risk factors")} style={{ fontSize: '0.76rem', padding: '6px 12px', borderRadius: '99px', background: 'var(--brand-red-light)', color: 'var(--brand-red)', border: '1px solid var(--brand-red-border)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
               ⚠️ My Risk Analysis
             </button>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSend} style={{ padding: '0.9rem 1.2rem', display: 'flex', gap: '10px', background: 'rgba(9, 13, 22, 0.95)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <form onSubmit={handleSend} style={{ padding: '0.9rem 1.2rem', display: 'flex', gap: '10px', background: '#ffffff', borderTop: '1px solid #e2e8f0' }}>
             <input
               type="text"
               placeholder="Ask a question..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '0.75rem 1rem', color: '#fff', outline: 'none', fontSize: '0.9rem' }}
+              style={{ flex: 1, background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '12px', padding: '0.75rem 1rem', color: '#0f172a', outline: 'none', fontSize: '0.9rem' }}
             />
             <button type="submit" className="btn-handcrafted btn-primary-glow" style={{ padding: '0.75rem 1.1rem', borderRadius: '12px' }}>
               <Send size={18} />
