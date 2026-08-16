@@ -49,6 +49,10 @@ export const DashboardLayout = () => {
             <BookOpen size={18} /> Curriculum Listing
           </NavLink>
 
+          <NavLink to="/reports/performance" className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}>
+            <BarChart3 size={18} /> Reports & Insights
+          </NavLink>
+
           {/* Role-Based Nav Items */}
           <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', padding: '24px 16px 8px' }}>
             {selectedRole === 'student' ? 'Student Workspace' : selectedRole === 'teacher' ? 'Faculty Portal' : 'Admin Controls'}
