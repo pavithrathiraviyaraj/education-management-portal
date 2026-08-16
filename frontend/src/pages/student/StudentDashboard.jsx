@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../../context/UserContext';
 import { getStudentAIAnalysis } from '../../services/aiEngineService';
-import { ShieldAlert, Award, TrendingUp, AlertCircle, CheckCircle2, Lightbulb, BookOpen, UserCheck, RefreshCw, Zap, Target } from 'lucide-react';
+import { ShieldAlert, Award, TrendingUp, AlertCircle, CheckCircle2, Lightbulb, BookOpen, UserCheck, RefreshCw, Zap, Target, Activity } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export const StudentDashboard = () => {
   const { activeStudentId, setActiveStudentId } = useContext(UserContext);
@@ -227,6 +228,30 @@ export const StudentDashboard = () => {
               <div className="track-bg">
                 <div className="track-fill" style={{ width: `${currentStudent.attendance_pct}%`, background: currentStudent.attendance_pct < 75 ? '#e11d48' : '#059669' }} />
               </div>
+            </div>
+          </div>
+
+          {/* AI Visual Performance Graph */}
+          <div className="handcrafted-card" style={{ padding: '2rem', marginBottom: '2.5rem' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Activity size={22} color="var(--brand-red)" /> Subject-wise Performance Analytics
+            </h3>
+            <div style={{ width: '100%', height: '350px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={currentStudent.subject_marks} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="subject_code" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} domain={[0, 100]} />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', fontWeight: 600, fontSize: '0.85rem' }}
+                    cursor={{ fill: 'rgba(220, 38, 38, 0.04)' }}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '0.85rem', fontWeight: 600, color: '#475569' }} iconType="circle" />
+                  <Bar dataKey="assignment_score" name="Assignments" fill="#fca5a5" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="midterm_score" name="Midterm Exam" fill="#f87171" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="endterm_score" name="Endterm Score" fill="#dc2626" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
